@@ -6,8 +6,8 @@ of the new CSV.
 Author: Manuel Senfft (www.tagirijus.de)
 """
 
-from sheettranslator.settings import Settings
-from sheettranslator.sheettranslator import RankTranslator
+from ranktranslator.settings import Settings
+from ranktranslator.ranktranslator import RankTranslator
 
 
 def main(settings):

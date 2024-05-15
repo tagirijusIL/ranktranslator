@@ -3,6 +3,13 @@ import os
 
 
 class RankTranslator(object):
+    COLUMN_PACK_TITLE = 'Pack Title'
+    COLUMN_RANK = 'Rank'
+    HEADERS = [
+        COLUMN_PACK_TITLE,
+        COLUMN_RANK
+    ]
+
     def __init__(self, settings):
         self.settings = settings
         self.args = settings.args
@@ -11,6 +18,7 @@ class RankTranslator(object):
 
         self.rank_data = self.read_csv(self.args.rank_csv)
         self.new_data = self.read_csv(self.args.new_csv)
+        self.out_data = []
         self.out_file = self.args.new_csv.replace('.csv', '_TRANSLATED.csv')
 
 
@@ -30,12 +38,32 @@ class RankTranslator(object):
 
     def write_csv(self):
         with open(self.out_file, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=self.master_headers())
+            writer = csv.DictWriter(csvfile, fieldnames=self.HEADERS)
             writer.writeheader()
-            for row in self.new_data:
+            for row in self.out_data:
                 writer.writerow(row)
 
     def translate(self):
-        
+        self.out_data = []
+        DONE = []
+
+        for new_pack in self.new_data:
+            title_new = new_pack[self.COLUMN_PACK_TITLE]
+            append_me = {
+                self.COLUMN_PACK_TITLE: title_new,
+                self.COLUMN_RANK: ''
+            }
+
+            for ranked_pack in self.rank_data:
+                title_ranked = ranked_pack[self.COLUMN_PACK_TITLE]
+                rank = ranked_pack[self.COLUMN_RANK]
+
+                if title_new == title_ranked:
+                    append_me = {
+                        self.COLUMN_PACK_TITLE: title_new,
+                        self.COLUMN_RANK: rank
+                    }
+
+            self.out_data.append(append_me)
 
         self.write_csv()
