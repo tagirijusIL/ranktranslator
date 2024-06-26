@@ -1,4 +1,5 @@
 import csv
+import json
 import os
 
 
@@ -14,12 +15,13 @@ class RankTranslator(object):
         self.settings = settings
         self.args = settings.args
 
-        self.check_files_exists()
+        if settings.args.convert == 'NONE':
+            self.check_files_exists()
 
-        self.rank_data = self.read_csv(self.args.rank_csv)
-        self.new_data = self.read_csv(self.args.new_csv)
-        self.out_data = []
-        self.out_file = self.args.new_csv.replace('.csv', '_TRANSLATED.csv')
+            self.rank_data = self.read_csv(self.args.rank_csv)
+            self.new_data = self.read_csv(self.args.new_csv)
+            self.out_data = []
+            self.out_file = self.args.new_csv.replace('.csv', '_TRANSLATED.csv')
 
 
     def check_files_exists(self):
@@ -67,3 +69,20 @@ class RankTranslator(object):
             self.out_data.append(append_me)
 
         self.write_csv()
+
+    def convert_json_to_csv(self, filename):
+        if not os.path.isfile(filename):
+            print(f'File "{filename}" odes not exist.')
+            exit(1)
+
+        with open(filename, 'r') as jsonfile:
+            json_data = json.load(jsonfile)
+
+        fieldnames = ['Pack Title', 'Rank']
+
+        with open(filename.replace('.json', '.csv'), mode='w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for entry in json_data:
+                row = {fieldnames[0]: entry['packTitle'], fieldnames[1]: entry['publishedMulti']}
+                writer.writerow(row)

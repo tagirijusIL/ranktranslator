@@ -33,4 +33,6 @@ class Settings(object):
             help='The CSV with only the pack title but no rank, yet the new sorting.'
         )
 
+        self.args.add_argument('-c', '--convert', default='NONE', help='Dateiname zum Konvertieren')
+
         self.args = self.args.parse_args()
